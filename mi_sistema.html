@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Mi Sistema</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root{
+  --bg:#0d0d0f;
+  --bg2:#141416;
+  --bg3:#1c1c20;
+  --card:#1e1e22;
+  --border:#2a2a30;
+  --text:#f0f0f0;
+  --muted:#7a7a85;
+  --teal:#2dd4a0;
+  --teal-dim:#1a3d30;
+  --purple:#9b8cff;
+  --purple-dim:#2a2245;
+  --amber:#f5a623;
+  --amber-dim:#3a2a10;
+  --blue:#60a5fa;
+  --blue-dim:#1a2a40;
+  --red:#f87171;
+}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh;padding-bottom:80px}
+
+/* NAV */
+.nav{position:fixed;bottom:0;left:0;right:0;background:var(--bg2);border-top:1px solid var(--border);display:flex;z-index:100;padding-bottom:env(safe-area-inset-bottom)}
+.nav-btn{flex:1;padding:12px 4px 10px;display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;color:var(--muted);transition:color .2s;background:none;border:none;font-family:'DM Sans',sans-serif}
+.nav-btn.active{color:var(--teal)}
+.nav-btn svg{width:22px;height:22px}
+.nav-label{font-size:10px;font-weight:500;letter-spacing:.3px}
+
+/* HEADER */
+.header{padding:20px 16px 8px;position:sticky;top:0;background:var(--bg);z-index:50;border-bottom:1px solid var(--border)}
+.header h1{font-size:22px;font-weight:600;letter-spacing:-.5px}
+.header p{font-size:13px;color:var(--muted);margin-top:2px}
+
+/* SECTIONS */
+.section{display:none;padding:16px}
+.section.active{display:block}
+
+/* CARDS */
+.card{background:var(--card);border:1px solid var(--border);border-radius:14px;margin-bottom:12px;overflow:hidden}
+.card-header{padding:14px 16px;display:flex;align-items:center;gap:10px;cursor:pointer}
+.card-icon{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.card-title{font-size:15px;font-weight:600;flex:1}
+.card-time{font-size:12px;font-weight:500;font-family:'DM Mono',monospace}
+.card-chevron{color:var(--muted);transition:transform .2s;font-size:18px}
+.card.open .card-chevron{transform:rotate(180deg)}
+.card-body{padding:0 16px 14px;display:none;font-size:13px;color:var(--muted);line-height:1.6}
+.card.open .card-body{display:block}
+.card-body p{margin-bottom:6px}
+.card-body p:last-child{margin-bottom:0}
+
+/* STEPS */
+.steps{display:flex;flex-direction:column;gap:0}
+.step-row{display:flex;gap:12px;padding:10px 0;border-bottom:1px solid var(--border);cursor:pointer}
+.step-row:last-child{border-bottom:none}
+.step-left{display:flex;flex-direction:column;align-items:center;gap:4px;width:44px;flex-shrink:0}
+.step-dot{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
+.step-time-label{font-size:10px;font-family:'DM Mono',monospace;color:var(--muted);text-align:center;line-height:1.2}
+.step-content{flex:1;padding-top:5px}
+.step-name{font-size:14px;font-weight:500;color:var(--text)}
+.step-tip{font-size:12px;color:var(--muted);line-height:1.5;margin-top:6px;display:none}
+.step-row.open .step-tip{display:block}
+
+/* TAGS */
+.tag{display:inline-block;font-size:10px;font-weight:500;padding:2px 8px;border-radius:20px;margin-right:4px;margin-bottom:4px}
+.tag-teal{background:var(--teal-dim);color:var(--teal)}
+.tag-purple{background:var(--purple-dim);color:var(--purple)}
+.tag-amber{background:var(--amber-dim);color:var(--amber)}
+.tag-blue{background:var(--blue-dim);color:var(--blue)}
+
+/* COLS */
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+.col-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px}
+.col-card h3{font-size:13px;font-weight:600;margin-bottom:10px}
+
+/* HABIT LIST */
+.habit-item{display:flex;align-items:flex-start;gap:10px;padding:10px 0;border-bottom:1px solid var(--border)}
+.habit-item:last-child{border-bottom:none}
+.habit-num{width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;flex-shrink:0}
+.habit-content .habit-name{font-size:14px;font-weight:500}
+.habit-content .habit-desc{font-size:12px;color:var(--muted);margin-top:2px;line-height:1.4}
+
+/* TECHNIQUE */
+.technique{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px;margin-bottom:12px}
+.technique h3{font-size:15px;font-weight:600;margin-bottom:6px;display:flex;align-items:center;gap:8px}
+.technique p{font-size:13px;color:var(--muted);line-height:1.6;margin-bottom:8px}
+.technique p:last-child{margin-bottom:0}
+.rule-box{background:var(--bg3);border-radius:10px;padding:12px;margin-top:10px}
+.rule-box p{font-size:13px;color:var(--text);line-height:1.6;margin:0}
+.rule-box strong{color:var(--teal)}
+
+/* JOURNAL */
+.journal-q{padding:10px 0;border-bottom:1px solid var(--border);font-size:14px;display:flex;gap:10px;align-items:flex-start}
+.journal-q:last-child{border-bottom:none}
+.q-num{color:var(--teal);font-weight:600;font-family:'DM Mono',monospace;font-size:13px;flex-shrink:0}
+
+/* DIVIDER */
+.divider{font-size:10px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--muted);padding:16px 0 8px}
+
+/* SLEEP */
+.sleep-tip{display:flex;gap:12px;padding:12px 0;border-bottom:1px solid var(--border);align-items:flex-start}
+.sleep-tip:last-child{border-bottom:none}
+.sleep-tip .icon{font-size:20px;flex-shrink:0;margin-top:1px}
+.sleep-tip .content .title{font-size:14px;font-weight:500}
+.sleep-tip .content .desc{font-size:12px;color:var(--muted);margin-top:2px;line-height:1.4}
+
+/* STRETCH */
+.stretch-item{padding:10px 0;border-bottom:1px solid var(--border);display:flex;gap:10px;align-items:flex-start}
+.stretch-item:last-child{border-bottom:none}
+.stretch-dur{font-size:10px;font-family:'DM Mono',monospace;color:var(--teal);background:var(--teal-dim);padding:2px 7px;border-radius:20px;flex-shrink:0;margin-top:2px}
+.stretch-content .stretch-name{font-size:14px;font-weight:500}
+.stretch-content .stretch-desc{font-size:12px;color:var(--muted);margin-top:2px;line-height:1.4}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>Mi Sistema</h1>
+  <p>Rutinas, técnicas y hábitos</p>
+</div>
+
+<!-- MAÑANA -->
+<div class="section active" id="sec-morning">
+  <div class="two-col">
+    <div class="col-card">
+      <h3 style="color:var(--teal)">🧘 Pilates<br><span style="color:var(--muted);font-weight:400">L · X · V</span></h3>
+    </div>
+    <div class="col-card">
+      <h3 style="color:var(--purple)">💼 Trabajo<br><span style="color:var(--muted);font-weight:400">M · J · S · D</span></h3>
+    </div>
+  </div>
+
+  <div class="divider">Inicio — igual todos los días</div>
+  <div class="card">
+    <div class="step-row" onclick="toggleStep(this)">
+      <div class="step-left"><div class="step-dot" style="background:#1a3d30;color:var(--teal)">⏰</div><span class="step-time-label">08:00</span></div>
+      <div class="step-content"><div class="step-name">Despertar</div><div class="step-tip">Cuenta 5-4-3-2-1 y el cuerpo se mueve. Sin snooze, sin negociar. Abre las persianas al instante. La luz le dice al cerebro que es de día.</div></div>
+    </div>
+    <div class="step-row" onclick="toggleStep(this)">
+      <div class="step-left"><div class="step-dot" style="background:#1a3d30;color:var(--teal)">🤸</div><span class="step-time-label">08:01</span></div>
+      <div class="step-content"><div class="step-name">Estiramientos 3 min</div><div class="step-tip">En el suelo antes de salir de la habitación. Rodillas al pecho → torsión → gato-vaca → postura del niño → círculos de cuello. Activan el cuerpo y reducen la inercia del sueño.</div></div>
+    </div>
+    <div class="step-row" onclick="toggleStep(this)">
+      <div class="step-left"><div class="step-dot" style="background:#1a3d30;color:var(--teal)">⚖️</div><span class="step-time-label">08:04</span></div>
+      <div class="step-content"><div class="step-name">Báscula + agua</div><div class="step-tip">Vas a la oficina a pesarte. El móvil se queda ahí. Un vaso de agua antes de nada — llevas 8h sin hidratarte.</div></div>
+    </div>
+    <div class="step-row" onclick="toggleStep(this)">
+      <div class="step-left"><div class="step-dot" style="background:#1a3d30;color:var(--teal)">✍️</div><span class="step-time-label">08:08</span></div>
+      <div class="step-content"><div class="step-name">3 MITs escritos</div><div class="step-tip">Antes del café. Formato: "Hoy haré [acción concreta] para [resultado]". El MIT #1 es el que harías si solo pudieras hacer uno. No tareas vagas, acciones específicas.</div></div>
+    </div>
+  </div>
+
+  <div class="divider">Pilates — L · X · V</div>
+  <div class="card">
+    <div class="step-row" onclick="toggleStep(this)">
+      <div class="step-left"><div class="step-dot" style="background:#1a3d30;color:var(--teal)">🚶</div><span class="step-time-label">08:15</span></div>
+      <div class="step-content"><div class="step-name">Salida a pilates</div><div class="step-tip">10 min andando. Sin móvil de camino. El trabajo del día ya está decidido.</div></div>
+    </div>
+    <div class="step-row" onclick="toggleStep(this)">
+      <div class="step-left"><div class="step-dot" style="background:#1a3d30;color:var(--teal)">🧘</div><span class="step-time-label">08:25</span></div>
+      <div class="step-content"><div class="step-name">Pilates</div><div class="step-tip">El ejercicio activa dopamina durante 2-3h. Al volver tendrás el mejor momento del día para trabajar. No lo desperdicies con el móvil.</div></div>
+    </div>
+    <div class="step-row" onclick="toggleStep(this)">
+      <div class="step-left"><div class="step-dot" style="background:#1a3d30;color:var(--teal)">🎯</div><span class="step-time-label">~09:30</span></div>
+      <div class="step-content"><div class="step-name">Pomodoros x3</div><div class="step-tip">Llegas, abres el ordenador, pones 25 min y arrancas MIT #1. Sin mirar el móvil. Tres bloques de 25+5 min.</div></div>
+    </div>
+    <div class="step-row" onclick="toggleStep(this)">
+      <div class="step-left"><div class="step-dot" style="background:#3a2a10;color:var(--amber)">🤖</div><span class="step-time-label">~11:30</span></div>
+      <div class="step-content"><div class="step-name">Formación IA</div><div class="step-tip">25-50 min. Transición entre trabajo y comida. El cerebro cambia de modo y lo percibe como descanso aunque estés aprendiendo.</div></div>
+    </div>
+    <div class="step-row" onclick="toggleStep(this)">
+      <div class="step-left"><div class="step-dot" style="background:var(--bg3);color:var(--muted)">🍽️</div><span class="step-time-label">~12:30</span></div>
+      <div class="step-content"><div class="step-name">Comida</div><div class="step-tip">Sin pantallas si puedes. La mañana ya está ganada.</div></div>
+    </div>
+  </div>
+
+  <div class="divider">Trabajo — M · J · S · D</div>
+  <div class="card">
+    <div class="step-row" onclick="toggleStep(this)">
+      <div class="step-left"><div class="step-dot" style="background:var(--purple-dim);color:var(--purple)">☕</div><span class="step-time-label">08:15</span></div>
+      <div class="step-content"><div class="step-name">Café + Pomodoro</div><div class="step-tip">Café en mano, temporizador 25 min, MIT #1. Sin móvil, sin email, sin redes. Solo la tarea. Este es el momento más crítico del día.</div></div>
+    </div>
+    <div class="step-row" onclick="toggleStep(this)">
+      <div class="step-left"><div class="step-dot" style="background:var(--purple-dim);color:var(--purple)">📱</div><span class="step-time-label">08:40</span></div>
+      <div class="step-content"><div class="step-name">Pausa 5 min</div><div class="step-tip">Ahora sí puedes mirar el móvil. Te lo has ganado. Levántate, muévete, bebe agua. Luego siguiente Pomodoro.</div></div>
+    </div>
+    <div class="step-row" onclick="toggleStep(this)">
+      <div class="step-left"><div class="step-dot" style="background:var(--purple-dim);color:var(--purple)">🎯</div><span class="step-time-label">08:45</span></div>
+      <div class="step-content"><div class="step-name">Pomodoros x2 más</div><div class="step-tip">Dos bloques de 25 min. Al terminar llevas 75 min de trabajo real. La mañana no ha fallado aunque el resto del día se complique.</div></div>
+    </div>
+    <div class="step-row" onclick="toggleStep(this)">
+      <div class="step-left"><div class="step-dot" style="background:var(--amber-dim);color:var(--amber)">🤖</div><span class="step-time-label">~10:30</span></div>
+      <div class="step-content"><div class="step-name">Formación IA</div><div class="step-tip">25-50 min. Después del trabajo intenso el cerebro agradece cambiar de contexto. Productivo pero se siente como descanso.</div></div>
+    </div>
+    <div class="step-row" onclick="toggleStep(this)">
+      <div class="step-left"><div class="step-dot" style="background:var(--bg3);color:var(--muted)">🍽️</div><span class="step-time-label">~11:30</span></div>
+      <div class="step-content"><div class="step-name">Comida</div><div class="step-tip">Sin pantallas si puedes. La mañana ya está ganada.</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- NOCHE -->
+<div class="section" id="sec-night">
+  <div class="divider">Tarde</div>
+  <div class="card">
+    <div class="step-row" onclick="toggleStep(this)">
+      <div class="step-left"><div class="step-dot" style="background:#1a3d30;color:var(--teal)">💪</div><span class="step-time-label">18:30</span></div>
+      <div class="step-content"><div class="step-name">Entrenamiento</div><div class="step-tip">Fuerza, correr o pádel. L/M/V cuando no hay formación. No lo negocies. 75 minutos máximo.</div></div>
+    </div>
+    <div class="step-row" onclick="toggleStep(this)">
+      <div class="step-left"><div class="step-dot" style="background:#1a3d30;color:var(--teal)">🚿</div><span class="step-time-label">19:45</span></div>
+      <div class="step-content"><div class="step-name">Vuelta + ducha</div><div class="step-tip">Desconexión real. El trabajo ha terminado. No abras el ordenador al llegar a casa.</div></div>
+    </div>
+    <div class="step-row" onclick="toggleStep(this)">
+      <div class="step-left"><div class="step-dot" style="background:var(--bg3);color:var(--muted)">🍽️</div><span class="step-time-label">20:00</span></div>
+      <div class="step-content"><div class="step-name">Cena</div><div class="step-tip">Sin pantallas si puedes. Nada de noticias estresantes ni trabajo.</div></div>
+    </div>
+  </div>
+
+  <div class="divider">Noche</div>
+  <div class="card">
+    <div class="step-row" onclick="toggleStep(this)">
+      <div class="step-left"><div class="step-dot" style="background:var(--purple-dim);color:var(--purple)">📚</div><span class="step-time-label">22:00</span></div>
+      <div class="step-content"><div class="step-name">Aprendizaje 30 min</div><div class="step-tip">Lectura, podcast o vídeo de IA. Sin redes sociales. Contenido que suma, no que dispersa.</div></div>
+    </div>
+    <div class="step-row" onclick="toggleStep(this)">
+      <div class="step-left"><div class="step-dot" style="background:var(--purple-dim);color:var(--purple)">📵</div><span class="step-time-label">22:30</span></div>
+      <div class="step-content"><div class="step-name">Pantallas off</div><div class="step-tip">Móvil boca abajo, TV apagada, ordenador cerrado. La luz azul bloquea la melatonina y retrasa el sueño. Sin excepciones.</div></div>
+    </div>
+    <div class="step-row" onclick="toggleStep(this)">
+      <div class="step-left"><div class="step-dot" style="background:var(--purple-dim);color:var(--purple)">✍️</div><span class="step-time-label">22:35</span></div>
+      <div class="step-content"><div class="step-name">Journaling 3 min</div><div class="step-tip">Tres preguntas, tres minutos. Cierra el día mentalmente para que el cerebro no lo procese mientras duermes.</div></div>
+    </div>
+  </div>
+
+  <div class="divider">Las 3 preguntas</div>
+  <div class="card" style="padding:4px 16px">
+    <div class="journal-q"><span class="q-num">01</span>¿Qué fue bien hoy?</div>
+    <div class="journal-q"><span class="q-num">02</span>¿Cumplí mi MIT #1?</div>
+    <div class="journal-q"><span class="q-num">03</span>¿Qué hago diferente mañana?</div>
+  </div>
+
+  <div class="card">
+    <div class="step-row" onclick="toggleStep(this)">
+      <div class="step-left"><div class="step-dot" style="background:var(--blue-dim);color:var(--blue)">😴</div><span class="step-time-label">23:00</span></div>
+      <div class="step-content"><div class="step-name">Dormir</div><div class="step-tip">7-8h de sueño. El móvil está en la oficina desde la noche. Sin TV. Si necesitas ruido, audio con pantalla apagada. Mañana a las 8:00 empieza otra vez.</div></div>
+    </div>
+  </div>
+
+  <div class="divider">Días con formación nocturna</div>
+  <div class="technique" style="border-color:var(--amber-dim)">
+    <p>Llegas tarde a casa. El cierre se simplifica:<br><strong style="color:var(--amber)">Journaling 3 min → dormir.</strong> Sin aprendizaje ni nada extra. Ya has trabajado suficiente ese día.</p>
+  </div>
+</div>
+
+<!-- TÉCNICAS -->
+<div class="section" id="sec-tech">
+  <div class="divider">Los 5 hábitos base</div>
+  <div class="card" style="padding:4px 16px">
+    <div class="habit-item">
+      <div class="habit-num" style="background:var(--teal-dim);color:var(--teal)">1</div>
+      <div class="habit-content"><div class="habit-name">Despertar 08:00 fijo</div><div class="habit-desc">Todos los días, fines de semana incluidos. El ritmo circadiano se regula en 2-3 semanas.</div></div>
+    </div>
+    <div class="habit-item">
+      <div class="habit-num" style="background:var(--teal-dim);color:var(--teal)">2</div>
+      <div class="habit-content"><div class="habit-name">Agua + sin móvil al despertar</div><div class="habit-desc">Móvil fuera de la habitación. Solo se toca tras el primer Pomodoro.</div></div>
+    </div>
+    <div class="habit-item">
+      <div class="habit-num" style="background:var(--teal-dim);color:var(--teal)">3</div>
+      <div class="habit-content"><div class="habit-name">3 MITs escritos</div><div class="habit-desc">Antes del café. Acciones concretas con resultado claro. No tareas vagas.</div></div>
+    </div>
+    <div class="habit-item">
+      <div class="habit-num" style="background:var(--teal-dim);color:var(--teal)">4</div>
+      <div class="habit-content"><div class="habit-name">Pomodoro para arrancar</div><div class="habit-desc">25 min de trabajo, 5 de pausa. Modo avión durante el bloque. Siempre.</div></div>
+    </div>
+    <div class="habit-item">
+      <div class="habit-num" style="background:var(--teal-dim);color:var(--teal)">5</div>
+      <div class="habit-content"><div class="habit-name">Journaling nocturno</div><div class="habit-desc">3 preguntas, 3 minutos. Cierra el día antes de dormir.</div></div>
+    </div>
+  </div>
+
+  <div class="divider">Técnica Pomodoro</div>
+  <div class="technique">
+    <h3><span style="color:var(--red)">🍅</span> Pomodoro</h3>
+    <p>25 minutos de trabajo + 5 de pausa. Cada 4 bloques, pausa larga de 20 min.</p>
+    <div class="rule-box">
+      <p><strong>Regla de los 10 minutos:</strong> cuando no tengas ganas, dite "solo 10 min y paro". Abre la tarea y trabaja 10 min. El 80% de las veces seguirás.</p>
+    </div>
+    <div class="rule-box" style="margin-top:8px">
+      <p><strong>Durante el Pomodoro:</strong> modo avión, una sola pestaña, una sola tarea. Cada interrupción te roba 20 min de concentración real.</p>
+    </div>
+  </div>
+
+  <div class="divider">MITs — Most Important Tasks</div>
+  <div class="technique">
+    <h3><span style="color:var(--amber)">🎯</span> Cómo escribir un MIT</h3>
+    <p>Formato exacto: <strong style="color:var(--amber)">"Hoy haré [acción] para [resultado]"</strong></p>
+    <div class="rule-box">
+      <p>❌ "Trabajar en la propuesta"<br>✅ "Escribir el apartado de precios de la propuesta de Pedro"</p>
+    </div>
+    <p style="margin-top:10px">El MIT #1 es el que harías si solo pudieras hacer una cosa. Los otros dos son secundarios.</p>
+  </div>
+
+  <div class="divider">Para tu tipo de cerebro</div>
+  <div class="technique">
+    <h3><span style="color:var(--purple)">⚡</span> TDA y foco</h3>
+    <p>El cerebro busca dopamina fácil. El móvil gana siempre si está disponible. La solución no es fuerza de voluntad, es <strong style="color:var(--purple)">eliminar la opción.</strong></p>
+    <div class="rule-box">
+      <p><strong>Body doubling:</strong> trabaja en videollamada con alguien. La presencia de otra persona activa circuitos de foco. Prueba <strong>Focusmate.com</strong> si no tienes a nadie.</p>
+    </div>
+    <div class="rule-box" style="margin-top:8px">
+      <p><strong>Límite artificial:</strong> "Tengo 20 minutos para terminar esto." La presión activa el foco cuando la tarea es aburrida.</p>
+    </div>
+  </div>
+
+  <div class="divider">Estiramientos al despertar</div>
+  <div class="card" style="padding:4px 16px">
+    <div class="stretch-item">
+      <span class="stretch-dur">30 seg</span>
+      <div class="stretch-content"><div class="stretch-name">Rodillas al pecho</div><div class="stretch-desc">Tumbado, abraza ambas rodillas. Relaja la espalda baja.</div></div>
+    </div>
+    <div class="stretch-item">
+      <span class="stretch-dur">20 seg ×2</span>
+      <div class="stretch-content"><div class="stretch-name">Torsión de columna</div><div class="stretch-desc">Rodilla al lado contrario, hombros en el suelo.</div></div>
+    </div>
+    <div class="stretch-item">
+      <span class="stretch-dur">30 seg</span>
+      <div class="stretch-content"><div class="stretch-name">Gato-vaca</div><div class="stretch-desc">A cuatro patas, arquea y redondea la espalda alternando.</div></div>
+    </div>
+    <div class="stretch-item">
+      <span class="stretch-dur">30 seg</span>
+      <div class="stretch-content"><div class="stretch-name">Postura del niño</div><div class="stretch-desc">Rodillas abiertas, brazos al frente, frente al suelo.</div></div>
+    </div>
+    <div class="stretch-item">
+      <span class="stretch-dur">20 seg</span>
+      <div class="stretch-content"><div class="stretch-name">Círculos de cuello</div><div class="stretch-desc">De pie, lento y sin forzar. Deshace tensión nocturna.</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- SUEÑO -->
+<div class="section" id="sec-sleep">
+  <div class="divider">Reglas del sueño</div>
+  <div class="card" style="padding:4px 16px">
+    <div class="sleep-tip">
+      <span class="icon">📵</span>
+      <div class="content"><div class="title">TV fuera de la habitación</div><div class="desc">La luz y el estímulo visual bloquean la melatonina y reducen la calidad del sueño REM.</div></div>
+    </div>
+    <div class="sleep-tip">
+      <span class="icon">📱</span>
+      <div class="content"><div class="title">Móvil en la oficina</div><div class="desc">No en la mesilla. Si necesitas alarma usa un reloj despertador físico.</div></div>
+    </div>
+    <div class="sleep-tip">
+      <span class="icon">🔊</span>
+      <div class="content"><div class="title">Si necesitas ruido para dormir</div><div class="desc">Audio con pantalla apagada y boca abajo. Lluvia, ruido blanco o música instrumental. Apps: Rain Rain, Calm.</div></div>
+    </div>
+    <div class="sleep-tip">
+      <span class="icon">❄️</span>
+      <div class="content"><div class="title">Temperatura fresca</div><div class="desc">18-19°C es lo óptimo para dormir. El cuerpo necesita bajar la temperatura para conciliar el sueño.</div></div>
+    </div>
+    <div class="sleep-tip">
+      <span class="icon">☕</span>
+      <div class="content"><div class="title">Cafeína</div><div class="desc">Última toma antes de las 14:00. La cafeína tiene vida media de 5h y afecta el sueño REM aunque no lo notes.</div></div>
+    </div>
+    <div class="sleep-tip">
+      <span class="icon">🌅</span>
+      <div class="content"><div class="title">Luz solar por la mañana</div><div class="desc">10-15 min de luz natural en la primera hora. Regula el ritmo circadiano y mejora el sueño de esa noche.</div></div>
+    </div>
+    <div class="sleep-tip">
+      <span class="icon">⏰</span>
+      <div class="content"><div class="title">Misma hora siempre</div><div class="desc">08:00 todos los días incluyendo fines de semana. En 2-3 semanas el cuerpo se despierta solo antes de la alarma.</div></div>
+    </div>
+  </div>
+
+  <div class="divider">El truco del snooze</div>
+  <div class="technique">
+    <p>Cada vez que le das a aplazar, el cerebro entra en un ciclo de sueño incompleto que te deja más aturdido. <strong style="color:var(--red)">Alarma suena → te levantas. Sin opciones.</strong></p>
+    <div class="rule-box">
+      <p><strong>5-4-3-2-1:</strong> cuando suene la alarma cuenta hacia atrás y al llegar a 1 el cuerpo se mueve. No pienses en levantarte, hazlo.</p>
+    </div>
+  </div>
+</div>
+
+<!-- NAV -->
+<nav class="nav">
+  <button class="nav-btn active" onclick="showSection('morning', this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+    <span class="nav-label">Mañana</span>
+  </button>
+  <button class="nav-btn" onclick="showSection('night', this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+    <span class="nav-label">Noche</span>
+  </button>
+  <button class="nav-btn" onclick="showSection('tech', this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+    <span class="nav-label">Técnicas</span>
+  </button>
+  <button class="nav-btn" onclick="showSection('sleep', this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M17 7l-5 5-5-5"/><rect x="3" y="3" width="18" height="18" rx="2"/></svg>
+    <span class="nav-label">Sueño</span>
+  </button>
+</nav>
+
+<script>
+function showSection(id, btn){
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('sec-'+id).classList.add('active');
+  btn.classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function toggleStep(el){
+  const wasOpen=el.classList.contains('open');
+  document.querySelectorAll('.step-row.open').forEach(s=>s.classList.remove('open'));
+  if(!wasOpen)el.classList.add('open');
+}
+</script>
+</body>
+</html>
